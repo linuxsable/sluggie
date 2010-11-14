@@ -137,18 +137,19 @@ var Board = function(width, height) {
 
 };
 
-var WallEntity = function (coord, style) {
+var WallEntity = function(coord, style) {
 	this.coords = [coord[0], coord[1]];
 	this.style = style;
 };	
 
-var fruitEntity = function (coord, style) {
+var fruitEntity = function(coord, style) {
 	this.coords = [coord[0], coord[1]];
 	this.style = style;
 };
 
 var SluggieEntity = function(coord, style) {
-	
+	this.coords = [coord[0], coord[1]];
+	this.style = style;
 };
 
 $(document).ready(function() {
