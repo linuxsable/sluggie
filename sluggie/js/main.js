@@ -1,6 +1,6 @@
 // Main game object
 var SluggieGame = function() {
-	this.GAME_LOOP_INTERVAL = 100.0;
+	this.GAME_LOOP_INTERVAL = 200.0;
 	this.BOARD_WIDTH = 100;
 	this.BOARD_HEIGHT = 50;
 	this.CELL_SIZE = 8;
@@ -68,22 +68,27 @@ var SluggieGame = function() {
 	};
 	
 	this.plotNewFruit = function() {
-	    var coords = [0, 0];
-	    var first = true;
-	    
-        // Check to make sure this is going to be the only
+	    // Check to make sure this is going to be the only
         // occupant of the new coordinates.
-	    while (this.board.getOccupant(coords) && first) {
-	        coords = [];
-	        coords.push(helpers.generateRandomNumber(this.BOARD_WIDTH));
-    	    coords.push(helpers.generateRandomNumber(this.BOARD_HEIGHT));
-    	    first = false;
-    	    console.log(coords);
-	    }
-
+	    var createCoords = function(coords) {
+	        if (!coords) {
+	            coords = [];
+	        }
+	        coords.push(helpers.generateRandomNumber(this.BOARD_WIDTH - 1));
+            coords.push(helpers.generateRandomNumber(this.BOARD_HEIGHT - 1));
+	        
+	        if (this.board.getOccupant(coords)) {
+	            console.log('firing');
+	            createCoords(coords);
+	        } else {
+	            return coords;
+	        }
+	    }.bind(this);
+	    
+	    var coords = createCoords();
         var fruit = new FruitEntity(coords, 1);
-        this.board.setOccupant(coords, fruit);
         
+        this.board.setOccupant(coords, fruit);
         this.drawFruit(fruit);
 	};
 	
@@ -143,12 +148,16 @@ var Board = function(width, height) {
 	};
 	
 	this.getOccupant = function(coord) {
-        if (!this.matrix[coord[0]]) {
+	    if (!coord) {
+	        return false;
+	    }
+        else if (!this.matrix[coord[0]]) {
             return false;
         }
         else if (!this.matrix[coord[0]][coord[1]]) {
             return false;
         } else {
+            console.log('found match');
             return this.matrix[coord[0]][coord[1]];
         }
 	};
