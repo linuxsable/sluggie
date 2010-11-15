@@ -2,18 +2,25 @@
 <html>
 	<head>
 		<title>Sluggie</title>
+		<link rel="stylesheet" href="css/style.css" type="text/css">
 		<script src="js/jquery-1.4.4.min.js" type="text/javascript" charset="utf-8"></script>
 		<script src="js/main.js" type="text/javascript" charset="utf-8"></script>
-		<style>
-			#canvas {
-				background-color: #6665FE;
-				border: 1px solid #ccc;
-			}
-		</style>
+		<script type="text/javascript" charset="utf-8">
+			$(document).ready(function() {
+				var s = new SluggieGame();
+				s.init();
+			});
+		</script>
 	</head>
 	<body>
-		<canvas id="canvas">
-			Canvas not supported yet.
-		</canvas>
+		<div id="wrapper">
+			<h1>Sluggie</h1>
+			<canvas id="canvas">
+				Canvas not supported yet.
+			</canvas>
+			<!-- <div id="stats">
+				Time: 200
+			</div> -->
+		</div>
 	</body>
 </html>

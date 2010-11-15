@@ -50,7 +50,7 @@ var SluggieGame = function() {
 		
 		this.gameLoop();
 		
-		this.run = setInterval(function () {
+		this.run = setInterval(function() {
 			this.gameLoop();
 		}.bind(this), this.GAME_LOOP_INTERVAL);
 	};
@@ -106,7 +106,7 @@ var SluggieGame = function() {
 var Board = function(width, height) {
 	this.matrix = [];
 	
-	this.init = function (width, height) {
+	this.init = function(width, height) {
 		for (var i = 0; i < width; i++) {
 			this.matrix.push([]);
 		}
@@ -120,7 +120,7 @@ var Board = function(width, height) {
 		return this.matrix[coord[0]][coord[1]];
 	};
 	
-	this.getLayout = function () {
+	this.getLayout = function() {
 		return this.matrix;
 	};
 	
@@ -134,7 +134,6 @@ var Board = function(width, height) {
 		}
 		return output;
 	};
-
 };
 
 var WallEntity = function(coord, style) {
@@ -151,8 +150,3 @@ var SluggieEntity = function(coord, style) {
 	this.coords = [coord[0], coord[1]];
 	this.style = style;
 };
-
-$(document).ready(function() {
-	var s = new SluggieGame()
-	s.init();
-});
