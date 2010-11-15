@@ -1,6 +1,6 @@
 // Main game object
 var SluggieGame = function() {
-	this.GAME_LOOP_INTERVAL = 1000.0;
+	this.GAME_LOOP_INTERVAL = 100.0;
 	this.BOARD_WIDTH = 100;
 	this.BOARD_HEIGHT = 50;
 	this.CELL_SIZE = 8;
@@ -42,9 +42,7 @@ var SluggieGame = function() {
 			return false;
 		}
 
-		this.plotWalls();
-		console.log(this.board.debugMatrix());
-		// todo: init a fruit (and place it randomly - missing walls or snake parts)
+		this.plotWalls().drawWalls();
 		
 		// todo: place the snake in a random position, and set direction to least-dangerous
 		
@@ -56,7 +54,6 @@ var SluggieGame = function() {
 	};
 	
 	this.gameLoop = function() {
-		console.log('tick');
 		this.update();
 		this.draw();
 	};
@@ -66,34 +63,63 @@ var SluggieGame = function() {
 	};
 
 	this.draw = function() {
-		var layout = this.board.getLayout();
-		
-		// clear buffer
-		
-		for(var i = 0, length = layout.length; i < length; i++) {
-			for(var j = 0, l2 = layout[i].length; j < l2; j++) {
-				if (layout[i][j]) {
-					this.canvasBufferContext.fillStyle = "rgba(15, 100, 50, 1)";  
-			        this.canvasBufferContext.fillRect((i * this.CELL_SIZE), (j * this.CELL_SIZE), this.CELL_SIZE - 1, this.CELL_SIZE - 1); 
-				}
-			}
-		}
-		
+		this.plotNewFruit();
         this.canvasContext.drawImage(this.canvasBuffer, 0, 0);
+	};
+	
+	this.plotNewFruit = function() {
+	    var coords = [0, 0];
+	    var first = true;
+	    
+        // Check to make sure this is going to be the only
+        // occupant of the new coordinates.
+	    while (this.board.getOccupant(coords) && first) {
+	        coords = [];
+	        coords.push(helpers.generateRandomNumber(this.BOARD_WIDTH));
+    	    coords.push(helpers.generateRandomNumber(this.BOARD_HEIGHT));
+    	    first = false;
+    	    console.log(coords);
+	    }
+
+        var fruit = new FruitEntity(coords, 1);
+        this.board.setOccupant(coords, fruit);
+        
+        this.drawFruit(fruit);
+	};
+	
+	this.drawFruit = function(fruitEntity) {
+        this.canvasBufferContext.fillStyle = "rgba(100, 200, 50, 1)";
+        this.canvasBufferContext.fillRect((fruitEntity.coords[0] * this.CELL_SIZE), (fruitEntity.coords[1] * this.CELL_SIZE), (this.CELL_SIZE - 1), (this.CELL_SIZE - 1));
 	};
 	
 	// todo: paint walls around the outside edge of the matrix
 	this.plotWalls = function() {
 		// Horizontal
-		for(var i = 0, length = this.BOARD_WIDTH; i < length; i++) {
+		for (var i = 0, length = this.BOARD_WIDTH; i < length; i++) {
 			this.board.setOccupant([i, 0], new WallEntity([i, 0], 1));
 			this.board.setOccupant([i, this.BOARD_HEIGHT - 1], new WallEntity([i, this.BOARD_HEIGHT - 1], 1));
 		}
 		
 		// Vertical
-		for(var i = 1, length = this.BOARD_HEIGHT - 1; i < length; i++) {
+		for (var i = 1, length = this.BOARD_HEIGHT - 1; i < length; i++) {
 			this.board.setOccupant([0, i], new WallEntity([0, i], 1));
 			this.board.setOccupant([this.BOARD_WIDTH - 1, i], new WallEntity([this.BOARD_WIDTH - 1, i], 1));
+		}
+		
+        // For chaining
+		return this;
+	};
+	
+	this.drawWalls = function() {
+	    var layout = this.board.getLayout();
+
+		for (var i = 0, length = layout.length; i < length; i++) {
+			for (var j = 0, l2 = layout[i].length; j < l2; j++) {
+				if (layout[i][j]) {
+					this.canvasBufferContext.fillStyle = "rgba(15, 100, 50, 1)";  
+			        this.canvasBufferContext.fillRect((i * this.CELL_SIZE), (j * this.CELL_SIZE), this.CELL_SIZE - 1, this.CELL_SIZE - 1); 
+				}
+			}
 		}
 	};
 	
@@ -117,7 +143,14 @@ var Board = function(width, height) {
 	};
 	
 	this.getOccupant = function(coord) {
-		return this.matrix[coord[0]][coord[1]];
+        if (!this.matrix[coord[0]]) {
+            return false;
+        }
+        else if (!this.matrix[coord[0]][coord[1]]) {
+            return false;
+        } else {
+            return this.matrix[coord[0]][coord[1]];
+        }
 	};
 	
 	this.getLayout = function() {
@@ -126,8 +159,8 @@ var Board = function(width, height) {
 	
 	this.debugMatrix = function() {
 		var output = '';
-		for(var j = 0; j < this.matrix[0].length; j++) {
-			for(var i = 0, length = this.matrix.length; i < length; i++) {
+		for (var j = 0; j < this.matrix[0].length; j++) {
+			for (var i = 0, length = this.matrix.length; i < length; i++) {
 				output += ((this.matrix[i][j]) ? 'X' : '.');
 			}
 			output += '\n';
@@ -141,7 +174,7 @@ var WallEntity = function(coord, style) {
 	this.style = style;
 };	
 
-var fruitEntity = function(coord, style) {
+var FruitEntity = function(coord, style) {
 	this.coords = [coord[0], coord[1]];
 	this.style = style;
 };
