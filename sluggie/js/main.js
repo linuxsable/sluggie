@@ -13,7 +13,10 @@ var SluggieGame = function() {
     this.board = new Board();
     this.board.init(this.BOARD_WIDTH, this.BOARD_HEIGHT);
     
-    this.entities = [];
+    this.entities = {
+        fruits: [],
+        walls: []
+    };
     
     this.initCanvas = function() {    
 		this.canvas = $('#canvas')[0];
@@ -63,22 +66,27 @@ var SluggieGame = function() {
 	};
 
 	this.draw = function() {
-		this.plotNewFruit();
+		this.plotAndDrawNewFruit();
         this.canvasContext.drawImage(this.canvasBuffer, 0, 0);
 	};
 	
-	this.plotNewFruit = function() {
+    // Returns false is fruit is already present,
+    // true if a new fruit has been plotted.
+	this.plotAndDrawNewFruit = function() {
+	    if (!this.entities.fruits.empty()) {
+            return false;
+	    }
+	    
 	    // Check to make sure this is going to be the only
         // occupant of the new coordinates.
 	    var createCoords = function(coords) {
 	        if (!coords) {
 	            coords = [];
 	        }
-	        coords.push(helpers.generateRandomNumber(this.BOARD_WIDTH - 1));
-            coords.push(helpers.generateRandomNumber(this.BOARD_HEIGHT - 1));
+	        coords[0] = helpers.generateRandomNumber(this.BOARD_WIDTH - 1);
+            coords[1] = helpers.generateRandomNumber(this.BOARD_HEIGHT - 1);
 	        
 	        if (this.board.getOccupant(coords)) {
-	            console.log('firing');
 	            createCoords(coords);
 	        } else {
 	            return coords;
@@ -90,6 +98,9 @@ var SluggieGame = function() {
         
         this.board.setOccupant(coords, fruit);
         this.drawFruit(fruit);
+        this.entities.fruits.push(fruit);
+        
+        return true;
 	};
 	
 	this.drawFruit = function(fruitEntity) {
@@ -156,8 +167,8 @@ var Board = function(width, height) {
         }
         else if (!this.matrix[coord[0]][coord[1]]) {
             return false;
-        } else {
-            console.log('found match');
+        } 
+        else if (this.matrix[coord[0]][coord[1]]) {
             return this.matrix[coord[0]][coord[1]];
         }
 	};

@@ -7,3 +7,11 @@ var helpers = {
         return Math.floor(Math.random() * ++maxLength);
     }
 };
+
+// Some augmentation
+Array.prototype.empty = function() {
+    if (this.length > 0) {
+        return false;
+    }
+    return true;
+};
