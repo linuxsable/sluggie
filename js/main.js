@@ -79,21 +79,27 @@ var SluggieGame = function() {
 	    
 	    // Check to make sure this is going to be the only
         // occupant of the new coordinates.
-	    var createCoords = function(coords) {
-	        if (!coords) {
-	            coords = [];
-	        }
-	        coords[0] = helpers.generateRandomNumber(this.BOARD_WIDTH - 1);
-            coords[1] = helpers.generateRandomNumber(this.BOARD_HEIGHT - 1);
+        var that = this;
+	    var createCoords = function() {
+            var o = [];
+            
+            // coords[0] = helpers.generateRandomNumber(this.BOARD_WIDTH - 1);
+            // coords[1] = helpers.generateRandomNumber(this.BOARD_HEIGHT - 1);
+            
+	        o[0] = helpers.generateRandomNumber(2);
+            o[1] = helpers.generateRandomNumber(2);
 	        
-	        if (this.board.getOccupant(coords)) {
-	            createCoords(coords);
+	        if (that.board.getOccupant(o)) {
+	            console.log('first:' + o);
+	            createCoords();
 	        } else {
-	            return coords;
+	            console.log('sec:' + o);
+	            return o;
 	        }
-	    }.bind(this);
+	    };
 	    
 	    var coords = createCoords();
+	    console.log('third:' + coords);
         var fruit = new FruitEntity(coords, 1);
         
         this.board.setOccupant(coords, fruit);
@@ -104,7 +110,7 @@ var SluggieGame = function() {
 	};
 	
 	this.drawFruit = function(fruitEntity) {
-        this.canvasBufferContext.fillStyle = "rgba(100, 200, 50, 1)";
+        this.canvasBufferContext.fillStyle = "rgba(233, 100, 200, 1)";
         this.canvasBufferContext.fillRect((fruitEntity.coords[0] * this.CELL_SIZE), (fruitEntity.coords[1] * this.CELL_SIZE), (this.CELL_SIZE - 1), (this.CELL_SIZE - 1));
 	};
 	
