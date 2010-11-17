@@ -83,8 +83,11 @@ var SluggieGame = function() {
 	    var createCoords = function() {
             var o = [];
             
-            o[0] = helpers.generateRandomNumber(this.BOARD_WIDTH - 1);
-            o[1] = helpers.generateRandomNumber(this.BOARD_HEIGHT - 1);
+            // coords[0] = helpers.generateRandomNumber(this.BOARD_WIDTH - 1);
+            // coords[1] = helpers.generateRandomNumber(this.BOARD_HEIGHT - 1);
+            
+	        o[0] = helpers.generateRandomNumber(that.BOARD_WIDTH - 1);
+            o[1] = helpers.generateRandomNumber(that.BOARD_HEIGHT - 1);
 	        
 	        if (that.board.getOccupant(o)) {
 	            return createCoords();
@@ -97,8 +100,8 @@ var SluggieGame = function() {
         var fruit = new FruitEntity(coords, 1);
         
         this.board.setOccupant(coords, fruit);
-        this.entities.fruits.push(fruit);
         this.drawFruit(fruit);
+        this.entities.fruits.push(fruit);
         
         return true;
 	};
