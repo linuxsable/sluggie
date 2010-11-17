@@ -83,28 +83,22 @@ var SluggieGame = function() {
 	    var createCoords = function() {
             var o = [];
             
-            // coords[0] = helpers.generateRandomNumber(this.BOARD_WIDTH - 1);
-            // coords[1] = helpers.generateRandomNumber(this.BOARD_HEIGHT - 1);
-            
-	        o[0] = helpers.generateRandomNumber(2);
-            o[1] = helpers.generateRandomNumber(2);
+            o[0] = helpers.generateRandomNumber(this.BOARD_WIDTH - 1);
+            o[1] = helpers.generateRandomNumber(this.BOARD_HEIGHT - 1);
 	        
 	        if (that.board.getOccupant(o)) {
-	            console.log('first:' + o);
-	            createCoords();
+	            return createCoords();
 	        } else {
-	            console.log('sec:' + o);
 	            return o;
 	        }
 	    };
 	    
 	    var coords = createCoords();
-	    console.log('third:' + coords);
         var fruit = new FruitEntity(coords, 1);
         
         this.board.setOccupant(coords, fruit);
-        this.drawFruit(fruit);
         this.entities.fruits.push(fruit);
+        this.drawFruit(fruit);
         
         return true;
 	};
