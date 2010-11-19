@@ -1,28 +1,55 @@
+
+var Coord = function(x, y) {
+	this.x = x;
+	this.y = y;
+};
+
+var Size = function(width, height) {
+	this.width = width;
+	this.height = height || width;
+};
+
+var Bounds = function(pos, size) {
+	if ($.isArray(pos)) {
+		this.top = pos[0];
+		this.right = pos[1];
+		this.bottom = pos[2];
+		this.left = pos[3];
+	} else {
+		this.top = pos.y;
+		this.right = pos.x + size.width;
+		this.bottom = pos.y + size.height;
+		this.left = pos.x;
+	}
+};
+
+var imageCache = {};
+
 // Main game object
 var SluggieGame = function() {
 	this.GAME_LOOP_INTERVAL = 200.0;
-	this.BOARD_WIDTH = 100;
-	this.BOARD_HEIGHT = 50;
-	this.CELL_SIZE = 8;
+	this.CANVAS_WIDTH = 800;
+	this.CANVAS_HEIGHT = 600;
+	this.WALL_SIZE = 15;
+	this.DEFAULT_ENTITY_SIZE = 32;
 	
 	this.canvas = null;
     this.canvasContext = null;
     this.canvasBuffer = null;
     this.canvasBufferContext = null;
     
-    this.board = new Board();
-    this.board.init(this.BOARD_WIDTH, this.BOARD_HEIGHT);
-    
     this.entities = {
-        fruits: [],
-        walls: []
+		player: {},
+        fruit: {},
+		salt: {},
+        wall: {}
     };
-    
+   
     this.initCanvas = function() {    
 		this.canvas = $('#canvas')[0];
 		$(this.canvas).attr({
-			'width': this.BOARD_WIDTH * this.CELL_SIZE,
-			'height': this.BOARD_HEIGHT * this.CELL_SIZE
+			'width': this.CANVAS_WIDTH,
+			'height': this.CANVAS_HEIGHT
 		});
 		
 		if (this.canvas && this.canvas.getContext) {
@@ -44,165 +71,172 @@ var SluggieGame = function() {
 			this.htmlError();
 			return false;
 		}
-
-		this.plotWalls().drawWalls();
 		
-		// todo: place the snake in a random position, and set direction to least-dangerous
+		imageCache.fruit = document.createElement('image');
+		imageCache.fruit.src = 'assets/fruit.gif';
+		imageCache.slug = document.createElement('image');
+		imageCache.slug.src = 'assets/slug.png';
 		
-		this.gameLoop();
 		
-		this.run = setInterval(function() {
-			this.gameLoop();
-		}.bind(this), this.GAME_LOOP_INTERVAL);
+		this.plotWalls();
+		this.plotSluggie();
+		
+		// todo: this to be sequenced after a startup screen, and eventually even level selector
+		this.startGame();
+		return true;
 	};
 	
+	this.startGame = function () {
+		// todo: place the snake in a random position, and set direction to least-dangerous
+		// if there is already an interval, clear it
+		// set up a new game and start the loop
+		var context = this;
+		this.interval = setInterval(function() {
+			context.gameLoop();
+		}, this.GAME_LOOP_INTERVAL);
+	};
+	
+	this.endGame = function () {
+		// clear the interval
+		clearInterval(this.interval);
+		
+		// spawn the endgame overlay
+	};
 	this.gameLoop = function() {
+		if ($.isEmptyObject(this.entities.fruit)) {
+			this.plotFruit();
+		}
+		
 		this.update();
-		this.draw();
+		this.drawFrame();
+		
 	};
 
 	this.update = function() {
 		// update game variables, handle user input, perform calculations etc.
-	};
-
-	this.draw = function() {
-		this.plotAndDrawNewFruit();
-        this.canvasContext.drawImage(this.canvasBuffer, 0, 0);
-	};
-	
-    // Returns false is fruit is already present,
-    // true if a new fruit has been plotted.
-	this.plotAndDrawNewFruit = function() {
-	    if (!this.entities.fruits.empty()) {
-            return false;
-	    }
-	    
-	    // Check to make sure this is going to be the only
-        // occupant of the new coordinates.
-        var that = this;
-	    var createCoords = function() {
-            var o = [];
-            
-            // coords[0] = helpers.generateRandomNumber(this.BOARD_WIDTH - 1);
-            // coords[1] = helpers.generateRandomNumber(this.BOARD_HEIGHT - 1);
-            
-	        o[0] = helpers.generateRandomNumber(that.BOARD_WIDTH - 1);
-            o[1] = helpers.generateRandomNumber(that.BOARD_HEIGHT - 1);
-	        
-	        if (that.board.getOccupant(o)) {
-	            return createCoords();
-	        } else {
-	            return o;
-	        }
-	    };
-	    
-	    var coords = createCoords();
-        var fruit = new FruitEntity(coords, 1);
-        
-        this.board.setOccupant(coords, fruit);
-        this.drawFruit(fruit);
-        this.entities.fruits.push(fruit);
-        
-        return true;
-	};
-	
-	this.drawFruit = function(fruitEntity) {
-        this.canvasBufferContext.fillStyle = "rgba(233, 100, 200, 1)";
-        this.canvasBufferContext.fillRect((fruitEntity.coords[0] * this.CELL_SIZE), (fruitEntity.coords[1] * this.CELL_SIZE), (this.CELL_SIZE - 1), (this.CELL_SIZE - 1));
-	};
-	
-	// todo: paint walls around the outside edge of the matrix
-	this.plotWalls = function() {
-		// Horizontal
-		for (var i = 0, length = this.BOARD_WIDTH; i < length; i++) {
-			this.board.setOccupant([i, 0], new WallEntity([i, 0], 1));
-			this.board.setOccupant([i, this.BOARD_HEIGHT - 1], new WallEntity([i, this.BOARD_HEIGHT - 1], 1));
-		}
-		
-		// Vertical
-		for (var i = 1, length = this.BOARD_HEIGHT - 1; i < length; i++) {
-			this.board.setOccupant([0, i], new WallEntity([0, i], 1));
-			this.board.setOccupant([this.BOARD_WIDTH - 1, i], new WallEntity([this.BOARD_WIDTH - 1, i], 1));
-		}
-		
-        // For chaining
-		return this;
-	};
-	
-	this.drawWalls = function() {
-	    var layout = this.board.getLayout();
-
-		for (var i = 0, length = layout.length; i < length; i++) {
-			for (var j = 0, l2 = layout[i].length; j < l2; j++) {
-				if (layout[i][j]) {
-					this.canvasBufferContext.fillStyle = "rgba(15, 100, 50, 1)";  
-			        this.canvasBufferContext.fillRect((i * this.CELL_SIZE), (j * this.CELL_SIZE), this.CELL_SIZE - 1, this.CELL_SIZE - 1); 
+		for(var catIdx in this.entities) {
+			for(var entityIdx in this.entities[catIdx]) {
+				if(this.entities[catIdx][entityIdx].update) {
+					this.entities[catIdx][entityIdx].update();
 				}
 			}
+		}
+	};
+	
+	this.drawFrame = function() {
+		this.renderToBuffer();
+		this.canvasContext.clearRect(0, 0, this.CANVAS_WIDTH, this.CANVAS_HEIGHT);
+		this.canvasContext.drawImage(this.canvasBuffer, 0, 0);
+	};
+	
+	// render the walls around the outside edge of the universe
+	this.plotWalls = function() {
+		var walls = [];
+		
+		// Horizontal
+		walls.push(new WallEntity(
+			new Coord(0, 0), 
+			new Size(this.CANVAS_WIDTH, this.WALL_SIZE)));
+		walls.push(new WallEntity(
+			new Coord(0, this.CANVAS_HEIGHT - this.WALL_SIZE), 
+			new Size(this.CANVAS_WIDTH, this.WALL_SIZE)));
+		
+		// Vertical
+		walls.push(new WallEntity(
+			new Coord(0, this.WALL_SIZE), 
+			new Size(this.WALL_SIZE, this.CANVAS_HEIGHT - (this.WALL_SIZE * 2))));
+		walls.push(new WallEntity(
+			new Coord(this.CANVAS_WIDTH - this.WALL_SIZE, this.WALL_SIZE), 
+			new Size(this.WALL_SIZE, this.CANVAS_HEIGHT - (this.WALL_SIZE * 2))));
+		
+		for(var i = 0, length = walls.length; i < length; i++) {
+			this.entities.wall[walls[i].id] = walls[i];
+		}
+	};
+	
+	// Returns false is fruit is already present,
+	// true if a new fruit has been plotted.
+	this.plotFruit = function() {
+		if (!$.isEmptyObject(this.entities.fruit)) {
+			return false;
+		}
+		var fruitSize = new Size(this.DEFAULT_ENTITY_SIZE);
+		var fruitMargin = 15;
+
+		var fruitCoord = this.getRandomEmptySpace(fruitSize, fruitMargin);
+
+		var fruit = new FruitEntity(fruitCoord);
+
+		this.entities.fruit[fruit.id] = fruit;
+
+		return true;
+	};
+	
+	this.plotSluggie = function() {
+		if (!$.isEmptyObject(this.entities.fruit)) {
+			return false;
+		}
+		
+		var slugSize = new Size(this.DEFAULT_ENTITY_SIZE);
+		var slugMargin = 15;
+
+		var slugCoord = this.getRandomEmptySpace(slugSize, slugMargin);
+
+		var slug = new SluggieEntity(slugCoord);
+
+		this.entities.player[slug.id] = slug;
+
+		return true;
+	};
+
+	this.renderToBuffer = function(param) {
+		param = param || {};
+		this.canvasBufferContext.clearRect(0, 0, this.CANVAS_WIDTH, this.CANVAS_HEIGHT);
+		
+		for (var catIdx in this.entities) {
+			if(!param.cat || param.cat == catIdx) {
+				for(var entityIdx in this.entities[catIdx]) {
+					this.entities[catIdx][entityIdx].render(this.canvasBufferContext);
+				}
+			}
+		}
+	};
+
+	this.checkForCollisions = function (bounds) {
+		for(var catIdx in this.entities) {
+			for(var foreignEnt in this.entities[catIdx]) {
+				if(helpers.detectRectangleIntersect(bounds, this.entities[catIdx][foreignEnt].bounds)) {
+					return foreignEnt;
+				}
+			}
+		}
+		return false;
+	};
+	
+	this.getRandomEmptySpace = function(size, margin) {
+		// Check to make sure this is going to be the only
+ 		// occupant of the new coordinates.
+		margin = margin || 0;
+		var createCoords = function() {
+			var o = new Coord(helpers.generateRandomNumber(this.CANVAS_WIDTH - 1), helpers.generateRandomNumber(this.CANVAS_HEIGHT - 1));
+			var bounds = new Bounds([o.y - margin, o.x + size.width + margin, o.y + size.height + margin, o.x - margin]);
+			if(this.checkForCollisions(bounds)) {
+				return createCoords.apply(this);
+			} else {
+				return o;
+			}
+		};
+
+		return createCoords.apply(this);
+	};
+	
+	this.entityDeath = function (category, entityId) {
+		if(this.entities[category][entityId]) {
+			delete this.entities[category][entityId];
 		}
 	};
 	
 	this.htmlError = function() {
 		alert('html error');
 	};
-};
-
-// The main board
-var Board = function(width, height) {
-	this.matrix = [];
-	
-	this.init = function(width, height) {
-		for (var i = 0; i < width; i++) {
-			this.matrix.push([]);
-		}
-	};
-	
-	this.setOccupant = function(coord, occupant) {
-		this.matrix[coord[0]][coord[1]] = occupant;
-	};
-	
-	this.getOccupant = function(coord) {
-	    if (!coord) {
-	        return false;
-	    }
-        else if (!this.matrix[coord[0]]) {
-            return false;
-        }
-        else if (!this.matrix[coord[0]][coord[1]]) {
-            return false;
-        } 
-        else if (this.matrix[coord[0]][coord[1]]) {
-            return this.matrix[coord[0]][coord[1]];
-        }
-	};
-	
-	this.getLayout = function() {
-		return this.matrix;
-	};
-	
-	this.debugMatrix = function() {
-		var output = '';
-		for (var j = 0; j < this.matrix[0].length; j++) {
-			for (var i = 0, length = this.matrix.length; i < length; i++) {
-				output += ((this.matrix[i][j]) ? 'X' : '.');
-			}
-			output += '\n';
-		}
-		return output;
-	};
-};
-
-var WallEntity = function(coord, style) {
-	this.coords = [coord[0], coord[1]];
-	this.style = style;
-};	
-
-var FruitEntity = function(coord, style) {
-	this.coords = [coord[0], coord[1]];
-	this.style = style;
-};
-
-var SluggieEntity = function(coord, style) {
-	this.coords = [coord[0], coord[1]];
-	this.style = style;
 };
