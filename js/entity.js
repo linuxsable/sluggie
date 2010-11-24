@@ -6,8 +6,9 @@ var WallEntity = function(coord, size, style) {
 	this.size = size;
 	this.bounds = new Bounds(this.pos, this.size);
 	this.style = style;
+	
 	this.render = function (context) {
-		context.fillStyle = "rgba(15, 100, 50, 1)";  
+		context.fillStyle = "rgba(56, 254, 19, 1)";  
         context.fillRect(this.pos.x, this.pos.y, this.size.width, this.size.height);
 	};
 };	
@@ -27,18 +28,22 @@ var FruitEntity = function(coord, lifespan, style) {
 		//context.fillRect(this.pos.x, this.pos.y, this.size.width, this.size.height);
 		context.drawImage(imageCache.fruit, this.pos.x, this.pos.y);
 	};
+	
 	this.update = function () {
 		if((new Date()).getTime() > (this.dob + (this.lifespan * 1000))) {
 			this.die();
 		}
 	};
+	
 	this.move = function (coord) {
 		this.pos = coord;
 		this.bounds = new Bounds(this.pos, this.size);
 	};
+	
 	this.collision = function (targetEntity) {
 		this.die();
 	};
+	
 	this.die = function() {
 		// fireEvent(entityDeath, this.entityType, this.entityId);
 		s.entityDeath(this.entityType, this.id);
@@ -60,18 +65,22 @@ var SaltEntity = function (coord, style) {
 		//context.fillRect(this.pos.x, this.pos.y, this.size.width, this.size.height);
 		context.drawImage(imageCache.salt, this.pos.x, this.pos.y);
 	};
+	
 	this.update = function () {
 		if((new Date()).getTime() > (this.dob + (this.lifespan * 1000))) {
 			this.die();
 		}
 	};
+	
 	this.move = function (coord) {
 		this.pos = coord;
 		this.bounds = new Bounds(this.pos, this.size);
 	};
+	
 	this.collision = function (targetEntity) {
 		this.die();
 	};
+	
 	this.die = function() {
 		// fireEvent(entityDeath, this.entityType, this.entityId);
 		s.entityDeath(this.entityType, this.id);
@@ -90,13 +99,11 @@ var SluggieEntity = function(coord, style) {
 	this.speed = 1;
 	
 	this.render = function (context) {
-		//context.fillStyle = "rgba(233, 233, 200, 1)";
-		//context.fillRect(this.pos.x, this.pos.y, this.size.width, this.size.height);
 		context.drawImage(imageCache.slug, this.pos.x, this.pos.y);
 	};
 	
 	this.setDirection = function (newDirection) {
-		switch(newDirection) {
+		switch (newDirection) {
 			case 'up':
 				this.direction = [0, -1];
 				break;
@@ -109,17 +116,18 @@ var SluggieEntity = function(coord, style) {
 			case 'right':
 				this.direction = [1, 0];
 				break;
-			default:
-				$.noop();
 		}
 	};
+	
 	this.update = function () {
 		this.move(new Coord(this.pos.x + (this.direction[0] * this.speed), this.pos.y + (this.direction[0] * this.speed) ));
 	};
+	
 	this.move = function (coord) {
 		this.pos = coord;
 		this.bounds = new Bounds(this.pos, this.size);
 	};
+	
 	this.collision = function (targetEntity) {
 		switch(targetEntity.entityType) {
 			case 'wall':

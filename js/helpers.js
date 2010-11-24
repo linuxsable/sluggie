@@ -18,8 +18,7 @@ var helpers = {
 			unique++;
 			return unique;
 		};
-	})()
-	
+	})()	
 };
 
 // Some augmentation

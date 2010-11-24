@@ -1,4 +1,3 @@
-
 var Coord = function(x, y) {
 	this.x = x;
 	this.y = y;
@@ -27,10 +26,10 @@ var imageCache = {};
 
 // Main game object
 var SluggieGame = function() {
-	this.GAME_LOOP_INTERVAL = 200.0;
+	this.GAME_LOOP_INTERVAL = 100.0;
 	this.CANVAS_WIDTH = 800;
-	this.CANVAS_HEIGHT = 600;
-	this.WALL_SIZE = 15;
+	this.CANVAS_HEIGHT = 500;
+	this.WALL_SIZE = 6;
 	this.DEFAULT_ENTITY_SIZE = 32;
 	
 	this.canvas = null;
@@ -39,7 +38,7 @@ var SluggieGame = function() {
     this.canvasBufferContext = null;
     
     this.entities = {
-		player: {},
+		slug: {},
         fruit: {},
 		salt: {},
         wall: {}
@@ -77,7 +76,6 @@ var SluggieGame = function() {
 		imageCache.slug = document.createElement('image');
 		imageCache.slug.src = 'assets/slug.png';
 		
-		
 		this.plotWalls();
 		this.plotSluggie();
 		
@@ -102,6 +100,7 @@ var SluggieGame = function() {
 		
 		// spawn the endgame overlay
 	};
+	
 	this.gameLoop = function() {
 		if ($.isEmptyObject(this.entities.fruit)) {
 			this.plotFruit();
@@ -109,14 +108,22 @@ var SluggieGame = function() {
 		
 		this.update();
 		this.drawFrame();
-		
 	};
 
 	this.update = function() {
 		// update game variables, handle user input, perform calculations etc.
-		for(var catIdx in this.entities) {
-			for(var entityIdx in this.entities[catIdx]) {
-				if(this.entities[catIdx][entityIdx].update) {
+		var that = this;
+		$(document).keypress(function(e) {
+		    var slug = that.entities.slug[0];
+            // Key: w
+		    if (e.keyCode == 119) {
+                slug.setDirection('left');
+            }
+		});
+		
+		for (var catIdx in this.entities) {
+			for (var entityIdx in this.entities[catIdx]) {
+				if (this.entities[catIdx][entityIdx].update) {
 					this.entities[catIdx][entityIdx].update();
 				}
 			}
@@ -184,7 +191,7 @@ var SluggieGame = function() {
 
 		var slug = new SluggieEntity(slugCoord);
 
-		this.entities.player[slug.id] = slug;
+		this.entities.slug[0] = slug;
 
 		return true;
 	};
@@ -194,8 +201,8 @@ var SluggieGame = function() {
 		this.canvasBufferContext.clearRect(0, 0, this.CANVAS_WIDTH, this.CANVAS_HEIGHT);
 		
 		for (var catIdx in this.entities) {
-			if(!param.cat || param.cat == catIdx) {
-				for(var entityIdx in this.entities[catIdx]) {
+			if (!param.cat || param.cat == catIdx) {
+				for (var entityIdx in this.entities[catIdx]) {
 					this.entities[catIdx][entityIdx].render(this.canvasBufferContext);
 				}
 			}
@@ -231,7 +238,7 @@ var SluggieGame = function() {
 	};
 	
 	this.entityDeath = function (category, entityId) {
-		if(this.entities[category][entityId]) {
+		if (this.entities[category][entityId]) {
 			delete this.entities[category][entityId];
 		}
 	};

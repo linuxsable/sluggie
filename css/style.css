@@ -17,7 +17,7 @@ h1 {
 
 #canvas {
 	margin-top: 10px;
-	background: -webkit-gradient(linear, 0% 0%, 0% 100%, from(#98ADD6), to(#5453D1));
+	background: #333;
 }
 
 #stats {
