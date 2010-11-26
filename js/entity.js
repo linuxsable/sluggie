@@ -96,7 +96,7 @@ var SluggieEntity = function(coord, style) {
 	this.bounds = new Bounds(this.pos, this.size);
 	this.style = style;
 	this.direction = [0, 0];
-	this.speed = 8;
+	this.speed = 5;
 	
 	this.render = function(context) {
         // context.drawImage(imageCache.slug, this.pos.x, this.pos.y);

@@ -88,9 +88,9 @@ var SluggieGame = function() {
 		// todo: place the snake in a random position, and set direction to least-dangerous
 		// if there is already an interval, clear it
 		// set up a new game and start the loop
-		var context = this;
+		var that = this;
 		this.interval = setInterval(function() {
-			context.gameLoop();
+			that.gameLoop();
 		}, this.LOOP_INTERVAL);
 	};
 	
@@ -221,7 +221,7 @@ var SluggieGame = function() {
 		}
 	};
 
-	this.checkForCollisions = function (bounds) {
+	this.checkForCollisions = function(bounds) {
 		for (var catIdx in this.entities) {
 			for (var foreignEnt in this.entities[catIdx]) {
 				if (helpers.detectRectangleIntersect(bounds, this.entities[catIdx][foreignEnt].bounds)) {
@@ -239,7 +239,7 @@ var SluggieGame = function() {
 		var createCoords = function() {
 			var o = new Coord(helpers.generateRandomNumber(this.CANVAS_WIDTH - 1), helpers.generateRandomNumber(this.CANVAS_HEIGHT - 1));
 			var bounds = new Bounds([o.y - margin, o.x + size.width + margin, o.y + size.height + margin, o.x - margin]);
-			if(this.checkForCollisions(bounds)) {
+			if (this.checkForCollisions(bounds)) {
 				return createCoords.apply(this);
 			} else {
 				return o;
