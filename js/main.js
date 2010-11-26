@@ -26,10 +26,10 @@ var imageCache = {};
 
 // Main game object
 var SluggieGame = function() {
-	this.GAME_LOOP_INTERVAL = 100.0;
+	this.LOOP_INTERVAL = 20.0;
 	this.CANVAS_WIDTH = 800;
-	this.CANVAS_HEIGHT = 500;
-	this.WALL_SIZE = 6;
+	this.CANVAS_HEIGHT = 400;
+	this.WALL_SIZE = 2;
 	this.DEFAULT_ENTITY_SIZE = 32;
 	
 	this.canvas = null;
@@ -91,7 +91,7 @@ var SluggieGame = function() {
 		var context = this;
 		this.interval = setInterval(function() {
 			context.gameLoop();
-		}, this.GAME_LOOP_INTERVAL);
+		}, this.LOOP_INTERVAL);
 	};
 	
 	this.endGame = function () {
@@ -105,7 +105,6 @@ var SluggieGame = function() {
 		if ($.isEmptyObject(this.entities.fruit)) {
 			this.plotFruit();
 		}
-		
 		this.update();
 		this.drawFrame();
 	};
@@ -115,9 +114,23 @@ var SluggieGame = function() {
 		var that = this;
 		$(document).keypress(function(e) {
 		    var slug = that.entities.slug[0];
-            // Key: w
-		    if (e.keyCode == 119) {
-                slug.setDirection('left');
+            switch (e.keyCode) {
+                // Key: w
+                case 119:
+                    slug.setDirection('up');
+                    break;
+                // Key: s
+                case 115:
+                    slug.setDirection('down');
+                    break;
+                // Key: d
+                case 100:
+                    slug.setDirection('right');
+                    break;
+                // Key: a    
+                case 97:
+                    slug.setDirection('left');
+                    break;
             }
 		});
 		
@@ -156,7 +169,7 @@ var SluggieGame = function() {
 			new Coord(this.CANVAS_WIDTH - this.WALL_SIZE, this.WALL_SIZE), 
 			new Size(this.WALL_SIZE, this.CANVAS_HEIGHT - (this.WALL_SIZE * 2))));
 		
-		for(var i = 0, length = walls.length; i < length; i++) {
+		for (var i = 0, length = walls.length; i < length; i++) {
 			this.entities.wall[walls[i].id] = walls[i];
 		}
 	};
@@ -167,11 +180,10 @@ var SluggieGame = function() {
 		if (!$.isEmptyObject(this.entities.fruit)) {
 			return false;
 		}
+		
 		var fruitSize = new Size(this.DEFAULT_ENTITY_SIZE);
 		var fruitMargin = 15;
-
 		var fruitCoord = this.getRandomEmptySpace(fruitSize, fruitMargin);
-
 		var fruit = new FruitEntity(fruitCoord);
 
 		this.entities.fruit[fruit.id] = fruit;
@@ -186,9 +198,9 @@ var SluggieGame = function() {
 		
 		var slugSize = new Size(this.DEFAULT_ENTITY_SIZE);
 		var slugMargin = 15;
-
+		
+        // TODO: Spawn the slug in the center
 		var slugCoord = this.getRandomEmptySpace(slugSize, slugMargin);
-
 		var slug = new SluggieEntity(slugCoord);
 
 		this.entities.slug[0] = slug;
@@ -210,9 +222,9 @@ var SluggieGame = function() {
 	};
 
 	this.checkForCollisions = function (bounds) {
-		for(var catIdx in this.entities) {
-			for(var foreignEnt in this.entities[catIdx]) {
-				if(helpers.detectRectangleIntersect(bounds, this.entities[catIdx][foreignEnt].bounds)) {
+		for (var catIdx in this.entities) {
+			for (var foreignEnt in this.entities[catIdx]) {
+				if (helpers.detectRectangleIntersect(bounds, this.entities[catIdx][foreignEnt].bounds)) {
 					return foreignEnt;
 				}
 			}
