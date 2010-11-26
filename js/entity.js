@@ -21,7 +21,7 @@ var FruitEntity = function(coord, lifespan, style) {
 	this.size = new Size(10, 10);
 	this.bounds = new Bounds(this.pos, this.size);
 	this.style = style;
-	this.lifespan = lifespan || 3;	// seconds
+	this.lifespan = lifespan || 5;	// seconds
 	
 	this.render = function(context) {
         context.fillStyle = "rgba(233, 100, 200, 1)";

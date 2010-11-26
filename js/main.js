@@ -50,17 +50,14 @@ var SluggieGame = function() {
 			'width': this.CANVAS_WIDTH,
 			'height': this.CANVAS_HEIGHT
 		});
-		
 		if (this.canvas && this.canvas.getContext) {
 		    this.canvasContext = this.canvas.getContext('2d');
 		    this.canvasBuffer = document.createElement('canvas');
 		    this.canvasBuffer.width = this.canvas.width;
 		    this.canvasBuffer.height = this.canvas.height;
-		    this.canvasBufferContext = this.canvasBuffer.getContext('2d');
-		    
+		    this.canvasBufferContext = this.canvasBuffer.getContext('2d'); 
 		    return true;
 		}
-		
 		return false;
     };
 	
@@ -81,7 +78,6 @@ var SluggieGame = function() {
 		
 		// todo: this to be sequenced after a startup screen, and eventually even level selector
 		this.startGame();
-		return true;
 	};
 	
 	this.startGame = function () {
