@@ -1,3 +1,5 @@
+logmeFlag = false; 
+
 var Coord = function(x, y) {
 	this.x = x;
 	this.y = y;
@@ -76,6 +78,8 @@ var SluggieGame = function() {
 		this.plotWalls();
 		this.plotSluggie();
 		
+		this.initDOMEvents();
+		
 		// todo: this to be sequenced after a startup screen, and eventually even level selector
 		this.startGame();
 	};
@@ -107,36 +111,21 @@ var SluggieGame = function() {
 
 	this.update = function() {
 		// update game variables, handle user input, perform calculations etc.
-		var that = this;
-		$(document).keypress(function(e) {
-		    var slug = that.entities.slug[0];
-            switch (e.keyCode) {
-                // Key: w
-                case 119:
-                    slug.setDirection('up');
-                    break;
-                // Key: s
-                case 115:
-                    slug.setDirection('down');
-                    break;
-                // Key: d
-                case 100:
-                    slug.setDirection('right');
-                    break;
-                // Key: a    
-                case 97:
-                    slug.setDirection('left');
-                    break;
-            }
-		});
-		
-		for (var catIdx in this.entities) {
-			for (var entityIdx in this.entities[catIdx]) {
-				if (this.entities[catIdx][entityIdx].update) {
-					this.entities[catIdx][entityIdx].update();
+		for(var catIdx in this.entities) {
+			for(var entityIdx in this.entities[catIdx]) {
+				var subjectEntity = this.entities[catIdx][entityIdx];
+				if(subjectEntity.update) {
+					subjectEntity.update();
+				}
+				if(subjectEntity.handleCollision) {
+					var target = this.checkForCollisions(subjectEntity.bounds, subjectEntity.id);
+					if(target != false) {
+						subjectEntity.handleCollision(target);
+					}
 				}
 			}
 		}
+		
 	};
 	
 	this.drawFrame = function() {
@@ -217,11 +206,20 @@ var SluggieGame = function() {
 		}
 	};
 
-	this.checkForCollisions = function(bounds) {
+	this.checkForCollisions = function(bounds, entityId) {
 		for (var catIdx in this.entities) {
 			for (var foreignEnt in this.entities[catIdx]) {
-				if (helpers.detectRectangleIntersect(bounds, this.entities[catIdx][foreignEnt].bounds)) {
-					return foreignEnt;
+				if(entityId && this.entities[catIdx][foreignEnt].id != entityId) {
+					if(logmeFlag) {
+						console.log('------------------------------------------------------------');
+						console.log('Checking: ');
+						console.log(bounds);
+						console.log(' against ' + this.entities[catIdx][foreignEnt].entityType);
+						console.log(this.entities[catIdx][foreignEnt].bounds);
+					}
+					if (helpers.detectRectangleIntersect(bounds, this.entities[catIdx][foreignEnt].bounds)) {
+						return this.entities[catIdx][foreignEnt];
+					}
 				}
 			}
 		}
@@ -249,6 +247,33 @@ var SluggieGame = function() {
 		if (this.entities[category][entityId]) {
 			delete this.entities[category][entityId];
 		}
+	};
+	
+	this.initDOMEvents = function() {
+		var slug = this.entities.slug[0];
+  		$(document).keypress(function(e) {
+ 			switch (e.keyCode) {
+				// Key: w
+				case 119:
+					slug.setDirection('up');
+					break;
+				// Key: s
+				case 115:
+					slug.setDirection('down');
+					break;
+				// Key: d
+				case 100:
+					slug.setDirection('right');
+					break;
+				// Key: a    
+				case 97:
+					slug.setDirection('left');
+					break;
+				case 32:
+					slug.setDirection('stop');
+					break;
+			}
+		});	
 	};
 	
 	this.htmlError = function() {

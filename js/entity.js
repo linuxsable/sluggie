@@ -40,10 +40,6 @@ var FruitEntity = function(coord, lifespan, style) {
 		this.bounds = new Bounds(this.pos, this.size);
 	};
 	
-	this.collision = function(targetEntity) {
-		this.die();
-	};
-	
 	this.die = function() {
 		// fireEvent(entityDeath, this.entityType, this.entityId);
 		s.entityDeath(this.entityType, this.id);
@@ -75,10 +71,6 @@ var SaltEntity = function(coord, style) {
 	this.move = function(coord) {
 		this.pos = coord;
 		this.bounds = new Bounds(this.pos, this.size);
-	};
-	
-	this.collision = function(targetEntity) {
-		this.die();
 	};
 	
 	this.die = function() {
@@ -118,6 +110,9 @@ var SluggieEntity = function(coord, style) {
 			case 'right':
 				this.direction = [1, 0];
 				break;
+			case 'stop':
+				this.direction = [0, 0];
+				break;
 		}
 	};
 	
@@ -133,17 +128,23 @@ var SluggieEntity = function(coord, style) {
 		this.bounds = new Bounds(this.pos, this.size);
 	};
 	
-	this.collision = function(targetEntity) {
+	this.handleCollision = function(targetEntity) {
 		switch (targetEntity.entityType) {
 			case 'wall':
 			case 'poison':
 			case 'body':
+				console.log('OWWWW - cut it out!!  - Sluggie');
+				this.setDirection('stop');
 				// fireEvent EndGame
 				break;
-			case 'food':
+			case 'fruit':
+				console.log('nom nom nom nom  - Sluggie');
+				targetEntity.die();
 				//grow slug
 				break;
 			default:
+				console.log('umm... found this:  - Sluggie');
+				console.log(targetEntity);
 				// Error - this should not occur
 		}
 	};
