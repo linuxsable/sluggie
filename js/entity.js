@@ -139,6 +139,8 @@ var SluggieEntity = function(coord, style) {
 				break;
 			case 'fruit':
 				console.log('nom nom nom nom  - Sluggie');
+				Scoreboard.incrementScore();
+				Scoreboard.renderUpdate();
 				targetEntity.die();
 				//grow slug
 				break;

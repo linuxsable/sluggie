@@ -1,4 +1,4 @@
-logmeFlag = false; 
+DEBUG = false;
 
 var Coord = function(x, y) {
 	this.x = x;
@@ -210,7 +210,7 @@ var SluggieGame = function() {
 		for (var catIdx in this.entities) {
 			for (var foreignEnt in this.entities[catIdx]) {
 				if(entityId && this.entities[catIdx][foreignEnt].id != entityId) {
-					if(logmeFlag) {
+					if(DEBUG) {
 						console.log('------------------------------------------------------------');
 						console.log('Checking: ');
 						console.log(bounds);

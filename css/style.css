@@ -30,6 +30,20 @@ h1 {
 	height: 30px;
 }
 
-#controls {
+#footer {
     color: #fff;
+    width: 100%;
+}
+
+#footer .left {
+    float: left;
+    width: 50%;
+}
+
+#footer .right {
+    float: left;
+    width: 50%;
+    text-align: right;
+    color: #FF008E;
+    font-weight: bold;
 }

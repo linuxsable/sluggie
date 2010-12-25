@@ -7,6 +7,7 @@
 		<script src="js/helpers.js" type="text/javascript" charset="utf-8"></script>
 		<script src="js/main.js" type="text/javascript" charset="utf-8"></script>
 		<script src="js/entity.js" type="text/javascript" charset="utf-8"></script>
+		<script src="js/scoreboard.js" type="text/javascript" charset="utf-8"></script>
 		<script type="text/javascript" charset="utf-8">
 			$(document).ready(function() {
 				s = new SluggieGame();
@@ -20,8 +21,13 @@
 			<canvas id="canvas">
 				HTML5 isn't supported yet. Get Crhome noa!
 			</canvas>
-			<div id="controls">
-				Controls: w: up, s:down, a: left, d: right
+			<div id="footer">
+				<div class="left">
+					Controls: w: up, s:down, a: left, d: right
+				</div>
+				<div class="right">
+					Score: <span id="score-num">0</span>
+				</div>
 			</div>
 			<!-- <div id="stats">
 				Time: 200
