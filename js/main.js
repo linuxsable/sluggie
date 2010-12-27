@@ -91,6 +91,7 @@ var SluggieGame = function() {
 		clearInterval(this.interval);
 		
 		// spawn the endgame overlay
+		$('audio')[0].play();
 		Scoreboard.renderEndGameScore();
 		$('#canvas, #footer').fadeOut(300, function() {
 		    $('#game-over').fadeIn(2000);
