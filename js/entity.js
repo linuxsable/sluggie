@@ -89,6 +89,7 @@ var SluggieEntity = function(coord, style) {
 	this.bounds = new Bounds(this.pos, this.size);
 	this.style = style;
 	this.direction = [0, 0];
+	this.currentDirectionName = '';
 	this.speed = 5;
 	
 	this.render = function(context) {
@@ -99,19 +100,32 @@ var SluggieEntity = function(coord, style) {
 	this.setDirection = function(newDirection) {
 		switch (newDirection) {
 			case 'up':
-				this.direction = [0, -1];
+				if (this.currentDirectionName != 'down') {
+				    this.currentDirectionName = newDirection;
+    				this.direction = [0, -1];
+				}
 				break;
 			case 'down':
-				this.direction = [0, 1];
+			    if (this.currentDirectionName != 'up') {
+			        this.direction = [0, 1];
+    				this.currentDirectionName = newDirection;
+			    }
 				break;
 			case 'left':
-				this.direction = [-1, 0];
+			    if (this.currentDirectionName != 'right') {
+			        this.direction = [-1, 0];
+    				this.currentDirectionName = newDirection;
+			    }
 				break;
 			case 'right':
-				this.direction = [1, 0];
+			    if (this.currentDirectionName != 'left') {
+			        this.direction = [1, 0];
+    				this.currentDirectionName = newDirection;
+			    }
 				break;
 			case 'stop':
 				this.direction = [0, 0];
+				this.currentDirectionName = newDirection;
 				break;
 		}
 	};
