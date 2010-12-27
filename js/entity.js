@@ -82,16 +82,16 @@ var SaltEntity = function(coord, style) {
 var SluggieEntity = function(coord, style) {
 	this.entityType = 'player';
 	this.id = helpers.getUniqueId();
+	this.class = 'sluggie-entity';
 	this.dob = (new Date()).getTime();
 	this.pos = coord;
-	this.size = new Size(15, 15);
+	this.size = new Size(10, 10);
 	this.bounds = new Bounds(this.pos, this.size);
 	this.style = style;
 	this.direction = [0, 0];
 	this.speed = 5;
 	
 	this.render = function(context) {
-        // context.drawImage(imageCache.slug, this.pos.x, this.pos.y);
         context.fillStyle = "rgba(233, 230, 200, 1)";
         context.fillRect(this.pos.x, this.pos.y, this.size.width, this.size.height);
 	};
@@ -131,16 +131,21 @@ var SluggieEntity = function(coord, style) {
 	this.handleCollision = function(targetEntity) {
 		switch (targetEntity.entityType) {
 			case 'wall':
+			    this.setDirection('stop');
+                s.endGame();
+			    break;
 			case 'poison':
+			    break;
 			case 'body':
 				console.log('OWWWW - cut it out!!  - Sluggie');
 				this.setDirection('stop');
-				// fireEvent EndGame
+                s.endGame();
 				break;
 			case 'fruit':
 				console.log('nom nom nom nom  - Sluggie');
 				Scoreboard.incrementScore();
 				Scoreboard.renderUpdate();
+				
 				targetEntity.die();
 				//grow slug
 				break;

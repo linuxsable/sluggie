@@ -46,6 +46,10 @@ Scoreboard = (function() {
        $('#score-num').html(my.getScoreValue());
    };
    
+   my.renderEndGameScore = function() {
+       $('#end-score').html(my.getScoreValue);
+   };
+   
    my.debug = function() {
        debugger;
    }

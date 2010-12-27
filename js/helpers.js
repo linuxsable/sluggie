@@ -15,8 +15,7 @@ var helpers = {
 	getUniqueId: (function () {
 		var unique = 0;
 		return function () {
-			unique++;
-			return unique;
+			return ++unique;
 		};
 	})()
 };

@@ -30,6 +30,34 @@ h1 {
 	height: 30px;
 }
 
+#game-over {
+    height: 30px;
+    color: #fff;
+    font: 38px Helvetica;
+    font-weight: bold;
+    display: none;
+    width: 300px;
+    height: 50px;
+    margin: auto;
+    position: relative;
+    top: 200px;
+}
+
+#game-over a {
+    font-size: 18px;
+    font-weight: none;
+    position: relative;
+    top: -16px;
+    left: 75px;
+}
+
+#game-over a,
+#game-over a:visited,
+#game-over a:active {
+    color: #fff;
+    color: yellow;
+}
+
 #footer {
     color: #fff;
     width: 100%;

@@ -24,8 +24,6 @@ var Bounds = function(pos, size) {
 	}
 };
 
-var imageCache = {};
-
 // Main game object
 var SluggieGame = function() {
 	this.LOOP_INTERVAL = 20.0;
@@ -70,14 +68,8 @@ var SluggieGame = function() {
 			return false;
 		}
 		
-		imageCache.fruit = document.createElement('image');
-		imageCache.fruit.src = 'assets/fruit.gif';
-		imageCache.slug = document.createElement('image');
-		imageCache.slug.src = 'assets/slug.png';
-		
 		this.plotWalls();
-		this.plotSluggie();
-		
+		this.plotSluggie();		
 		this.initDOMEvents();
 		
 		// todo: this to be sequenced after a startup screen, and eventually even level selector
@@ -99,6 +91,10 @@ var SluggieGame = function() {
 		clearInterval(this.interval);
 		
 		// spawn the endgame overlay
+		Scoreboard.renderEndGameScore();
+		$('#canvas, #footer').fadeOut(300, function() {
+		    $('#game-over').fadeIn(2000);
+		});
 	};
 	
 	this.gameLoop = function() {
