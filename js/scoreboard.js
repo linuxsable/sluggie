@@ -2,7 +2,7 @@ Scoreboard = (function() {
    var my = {}, 
    scoreCount = 0,
    scoreValue = 0,
-   scoreMultiplier = 1000;
+   scoreMultiplier = 10000;
    
    my.setScoreMultiplier = function(value) {
        this.scoreMultiplier = value;
