@@ -143,6 +143,7 @@ var SluggieEntity = function(coord, style) {
 				break;
 			case 'fruit':
 				console.log('nom nom nom nom  - Sluggie');
+				$('#eat-sound')[0].play();
 				Scoreboard.incrementScore();
 				Scoreboard.renderUpdate();
 				
